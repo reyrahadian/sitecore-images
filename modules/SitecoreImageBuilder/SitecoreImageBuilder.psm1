@@ -114,7 +114,7 @@ function Invoke-Build
         }
     
         # Build image
-        if ($tag -like "*sql*" or $tag -like "*solr*")
+        if ($tag -like "*sql*" -Or $tag -like "*solr*")
         {
             # Building SQL/SOLR based images needs more memory than the default 2GB...
             docker image build --isolation "hyperv" --memory 4GB --tag $tag $spec.Path
