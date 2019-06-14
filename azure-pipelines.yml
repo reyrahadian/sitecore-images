@@ -17,9 +17,9 @@ steps:
         Import-Module ".\modules\SitecoreImageBuilder" -Force
         Write-Host "Settings"
         $installSourcePath = ".\packages"
-        $registry = $(dockerRegistryHost)
-        $sitecoreUsername = $(sitecoreUsername)
-        $sitecorePassword = $(sitecorePassword)
+        $registry = $env:dockerRegistryHost
+        $sitecoreUsername = $env:sitecoreUsername
+        $sitecorePassword = $env:sitecorePassword
         $baseTags = "sitecore-*:9.1.1*ltsc2019"
 
         Write-Host "Restoring packages"
@@ -27,8 +27,8 @@ steps:
           -Path ".\images" `
           -Destination $installSourcePath `
           -Tags $baseTags `
-          -SitecoreUsername $sitecoreUsername `
-          -SitecorePassword $sitecorePassword
+          -SitecoreUsername $env:sitecoreUsername `
+          -SitecorePassword $env:sitecorePassword
 
         Write-Host "Building Docker images and push to docker registry"
         SitecoreImageBuilder\Invoke-Build `
@@ -39,3 +39,5 @@ steps:
           -PushMode "WhenChanged"
 
         Write-Host "End - Build and Push Docker images"
+        env:
+          sitecorePassword: $(sitecorePassword)
