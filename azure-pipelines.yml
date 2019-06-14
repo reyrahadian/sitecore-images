@@ -10,6 +10,11 @@ steps:
     inputs:
       containerRegistry: akqahub
       command: login
+  - task: DownloadSecureFile@1
+    inputs:
+      secureFile: license.xml
+  - powershell: New-Item -Path . -Name packages -ItemType "directory"
+  - powershell: Move-Item -Path $env:DOWNLOADSECUREFILE_SECUREFILEPATH -Destination .\packages
   - task: PowerShell@2
     inputs:
       targetType: inline
