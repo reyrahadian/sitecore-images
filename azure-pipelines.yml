@@ -1,54 +1,44 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
-
+  - master
 pool:
-  vmImage: 'windows-2019'
-
+  vmImage: windows-2019
 steps:
-- task: Docker@2
-  displayName: Docker Login
-  inputs:
-    containerRegistry: 'akqahub'
-    command: 'login'
-- task: PowerShell@2
-  displayName: Build and Push Docker images
-  inputs:
-    targetType: 'inline'
-    script: 'Write-Host "Start - Build and Push Docker images"
-      
-      Write-Host "Import Module"
-      
-      Import-Module ".\modules\SitecoreImageBuilder" -Force
-      
-      Write-Host "Settings"
-      
-      $installSourcePath = ".\packages"
-      $registry = $(dockerRegistryHost)
-      $sitecoreUsername = $(sitecoreUsername)
-      $sitecorePassword = $(sitecorePassword)
-      $baseTags = "sitecore-*:9.1.1*ltsc2019"
+  - task: Docker@2
+    displayName: Docker Login
+    inputs:
+      containerRegistry: akqahub
+      command: login
+  - task: PowerShell@2
+    displayName: Build and Push Docker images
+    inputs:
+      targetType: inline
+      script: >-
+        Write-Host "Start - Build and Push Docker images"
 
-      Write-Host "Restoring packages"
+        Write-Host "Import Module"
+        Import-Module ".\modules\SitecoreImageBuilder" -Force
 
-      SitecoreImageBuilder\Invoke-PackageRestore `
+        Write-Host "Settings"
+        $installSourcePath = ".\packages"
+        $registry = $(dockerRegistryHost)
+        $sitecoreUsername = $(sitecoreUsername)
+        $sitecorePassword = $(sitecorePassword)
+        $baseTags = "sitecore-*:9.1.1*ltsc2019"
+
+        Write-Host "Restoring packages"
+        SitecoreImageBuilder\Invoke-PackageRestore `
           -Path ".\images" `
           -Destination $installSourcePath `
           -Tags $baseTags `
           -SitecoreUsername $sitecoreUsername `
           -SitecorePassword $sitecorePassword
-      
-      Write-Host "Building Docker images and push to docker registry"
 
-      SitecoreImageBuilder\Invoke-Build `
+        Write-Host "Building Docker images and push to docker registry"
+        SitecoreImageBuilder\Invoke-Build `
           -Path ".\images" `
           -InstallSourcePath $installSourcePath `
           -Registry $registry `
           -Tags $baseTags `
           -PushMode "WhenChanged"
 
-      Write-Host "End - Build and Push Docker images"'
+        Write-Host "End - Build and Push Docker images"
