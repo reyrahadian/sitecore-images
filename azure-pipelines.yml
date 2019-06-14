@@ -7,13 +7,39 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-2019'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'akqahub'
+    command: 'login'
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: '# Load module
+      Import-Module ".\modules\SitecoreImageBuilder" -Force
+      
+      # Settings
+      $installSourcePath = ".\packages"
+      $registry = $(dockerRegistryHost)
+      $sitecoreUsername = $(sitecoreUsername)
+      $sitecorePassword = $(sitecorePassword)
+      
+      $baseTags = "sitecore-*:9.1.1*ltsc2019"
+      
+      # Restore packages needed for base images, only files missing in $installSourcePath will be downloaded
+      SitecoreImageBuilder\Invoke-PackageRestore `
+          -Path ".\images" `
+          -Destination $installSourcePath `
+          -Tags $baseTags `
+          -SitecoreUsername $sitecoreUsername `
+          -SitecorePassword $sitecorePassword
+      
+      # Build and push base images
+      SitecoreImageBuilder\Invoke-Build `
+          -Path ".\images" `
+          -InstallSourcePath $installSourcePath `
+          -Registry $registry `
+          -Tags $baseTags `
+          -PushMode "WhenChanged"'
