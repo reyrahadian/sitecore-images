@@ -15,6 +15,7 @@ steps:
         Write-Host "Start - Build and Push Docker images"
         Write-Host "Import Module"
         Import-Module ".\modules\SitecoreImageBuilder" -Force
+
         Write-Host "Settings"
         $installSourcePath = ".\packages"
         $registry = $env:dockerRegistryHost
