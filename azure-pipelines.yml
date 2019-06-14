@@ -19,20 +19,17 @@ steps:
   displayName: Build and Push Docker images
   inputs:
     targetType: 'inline'
-    script: 'Write-Host "Start - Build and Push Docker images"
-      # Load module
+    script: 'Write-Host "Start - Build and Push Docker images"      
       Write-Host "Import Module"
       Import-Module ".\modules\SitecoreImageBuilder" -Force
       
-      Write-Host "Settings"
-      # Settings
+      Write-Host "Settings"      
       $installSourcePath = ".\packages"
       $registry = $(dockerRegistryHost)
       $sitecoreUsername = $(sitecoreUsername)
       $sitecorePassword = $(sitecorePassword)      
       $baseTags = "sitecore-*:9.1.1*ltsc2019"
-      
-      # Restore packages needed for base images, only files missing in $installSourcePath will be downloaded
+            
       Write-Host "Restoring packages"
       SitecoreImageBuilder\Invoke-PackageRestore `
           -Path ".\images" `
@@ -40,8 +37,7 @@ steps:
           -Tags $baseTags `
           -SitecoreUsername $sitecoreUsername `
           -SitecorePassword $sitecorePassword
-      
-      # Build and push base images
+            
       Write-Host "Building Docker images and push to docker registry"
       SitecoreImageBuilder\Invoke-Build `
           -Path ".\images" `
