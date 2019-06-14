@@ -21,14 +21,15 @@ steps:
     targetType: 'inline'
     script: 'Write-Host "Start - Build and Push Docker images"
       # Load module
+      Write-Host "Import Module"
       Import-Module ".\modules\SitecoreImageBuilder" -Force
       
+      Write-Host "Settings"
       # Settings
       $installSourcePath = ".\packages"
       $registry = $(dockerRegistryHost)
       $sitecoreUsername = $(sitecoreUsername)
-      $sitecorePassword = $(sitecorePassword)
-      
+      $sitecorePassword = $(sitecorePassword)      
       $baseTags = "sitecore-*:9.1.1*ltsc2019"
       
       # Restore packages needed for base images, only files missing in $installSourcePath will be downloaded
