@@ -11,10 +11,12 @@ pool:
 
 steps:
 - task: Docker@2
+  displayName: Docker Login
   inputs:
     containerRegistry: 'akqahub'
     command: 'login'
 - task: PowerShell@2
+  displayName: Build and Push Docker images
   inputs:
     targetType: 'inline'
     script: '# Load module
