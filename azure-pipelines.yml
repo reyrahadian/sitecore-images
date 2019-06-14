@@ -7,38 +7,36 @@ steps:
     displayName: Docker Login
     inputs:
       containerRegistry: akqahub
-      command: login
+      command: login  
   - task: PowerShell@2
-    displayName: Build and Push Docker images
     inputs:
-      targetType: inline
-      script: >-
-        Write-Host "Start - Build and Push Docker images"
-
+      targetType: 'inline'
+      script: 'Write-Host "Start - Build and Push Docker images"
+        
         Write-Host "Import Module"
         Import-Module ".\modules\SitecoreImageBuilder" -Force
-
+        
         Write-Host "Settings"
         $installSourcePath = ".\packages"
         $registry = $(dockerRegistryHost)
         $sitecoreUsername = $(sitecoreUsername)
         $sitecorePassword = $(sitecorePassword)
         $baseTags = "sitecore-*:9.1.1*ltsc2019"
-
+        
         Write-Host "Restoring packages"
         SitecoreImageBuilder\Invoke-PackageRestore `
-          -Path ".\images" `
-          -Destination $installSourcePath `
-          -Tags $baseTags `
-          -SitecoreUsername $sitecoreUsername `
-          -SitecorePassword $sitecorePassword
-
+            -Path ".\images" `
+            -Destination $installSourcePath `
+            -Tags $baseTags `
+            -SitecoreUsername $sitecoreUsername `
+            -SitecorePassword $sitecorePassword
+        
         Write-Host "Building Docker images and push to docker registry"
         SitecoreImageBuilder\Invoke-Build `
-          -Path ".\images" `
-          -InstallSourcePath $installSourcePath `
-          -Registry $registry `
-          -Tags $baseTags `
-          -PushMode "WhenChanged"
-
-        Write-Host "End - Build and Push Docker images"
+            -Path ".\images" `
+            -InstallSourcePath $installSourcePath `
+            -Registry $registry `
+            -Tags $baseTags `
+            -PushMode "WhenChanged"
+        
+        Write-Host "End - Build and Push Docker images"'
